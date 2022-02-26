@@ -37,7 +37,24 @@ const promptUser = async () => {
     ]).then(async userChoice => {
         switch(userChoice.prompts) {
             case "view all departments":
-                showAllDepartments();
+                showTable("departments");
+                return;
+            
+            case "view all roles":
+                showTable("roles");
+                return;
+            
+            case "view all employees":
+                showTable("employees");
+                return;
+            
+            case "add a department":
+                addToTable("departments");
+                return;
+
+            case "add a role":
+                addToTable("roles");
+                return;
         }
 
     });
@@ -45,16 +62,66 @@ const promptUser = async () => {
 
 promptUser();
 
-// Function to show all databases on seleciton in inquirer
-const showAllDepartments = async () => {
-    const data = await connect();   // Get the database connection
 
-    // Query the database to get all departments in the department table
-    data.query("SELECT * FROM departments", (err, result) => {
+// Function to show all elements in a given table based on selection in inquirer
+const showTable = async (table) => {
+    const db = await connect();   // Get the database connection
+
+    db.query(`SELECT * FROM ${table}`, (err, result) => {
         if (err) {
             console.log(err);   //Hanlde errors
+            promptUser();
         } else {
             console.table(result);  // Handle data
+            console.log("\n");
+            promptUser();
+        }
+    });
+}
+
+const addToTable = async (table) => {
+    if (table == "departments") {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "name",
+                mesasge: "Name of department:"
+            }
+        ]).then(userChoice => {
+            addValues("departments", ("department_name"), `"${userChoice.name}"`);
+        });
+    } else if (table == "roles") {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "department",
+                mesasge: "department id of role:"
+            },
+            {
+                type: "input",
+                name: "name",
+                mesasge: "name of role:"
+            },
+            {
+                type: "input",
+                name: "salary",
+                mesasge: "salary of role:"
+            }
+        ]).then( userChoice => {
+            console.log(userChoice);
+            addValues("roles", "department_id, title, salary", `${userChoice.department}, "${userChoice.name}", ${userChoice.salary}`)
+        });
+    }
+};
+
+const addValues = async (table, rows, values) => {
+    const db = await connect();
+    db.query(`INSERT INTO ${table}(${rows}) VALUES (${values})`, (err, result) => {
+        if (err) {
+            console.log(err);
+            promptUser();
+        } else {
+            promptUser();
         }
     });
 }

@@ -18,7 +18,7 @@ VALUES  (1, "Lead Engineer", 99000.99),
         (3, "Senior Consultant", 97450.90),
         (3, "Junior Consultant", 65050.87);
         
-INSERT INTO employee (role_id, first_name, last_name, manager_id)
+INSERT INTO employees (role_id, first_name, last_name, manager_id)
 VALUES  (1, "Evan", "Woods", NULL),
         (2, "Kevin", "Peng", NULL),
         (3, "Liam", "Okane", 1),
