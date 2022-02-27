@@ -27,3 +27,8 @@ CREATE TABLE employees (
   FOREIGN KEY (manager_id) REFERENCES employees(id)
 
 );
+
+CREATE TABLE budget (
+  department VARCHAR(30) NOT NULL,
+  total_cost DECIMAL
+);
