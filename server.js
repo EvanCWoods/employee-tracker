@@ -272,38 +272,6 @@ const updateEmployee = async () => {
     })
 }
 
-// const viewBudgets = async () => {
-//     let department;
-//     let total_cost = 0;
-//     const db = await connect();
-//     db.query("SELECT * FROM departments", (err, result) => {
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             for (let i=0; i<result.length; i++) {
-//                 console.log(result[i].name);
-//                 db.query(`SELECT * FROM roles WHERE department_id = ${result[i].id}`, (err, result) => {
-//                     if (err) {
-//                         console.log(err);
-//                     } else {
-//                         for (let j=0; j<result.length; j++) {
-//                             total_cost += parseFloat(result[j].salary);
-//                             db.query(`INSERT INTO budget (department, total_cost) VALUES ("${department}", ${total_cost})`);
-//                         }
-//                     }
-//                 })
-//             }
-//         }
-//     });
-//     db.query(`SELECT * FROM budget`, (err, result) => {
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             console.table(result)
-//         }
-//     })
-// }
-
 viewBudget = async () => { 
     const sql = `SELECT department_id AS id, 
                         departments.name AS department,
