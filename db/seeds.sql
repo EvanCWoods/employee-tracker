@@ -1,27 +1,32 @@
 USE my_company;
 
 SET FOREIGN_KEY_CHECKS=0;
-TRUNCATE employee;
+TRUNCATE employees;
 TRUNCATE roles;
 TRUNCATE departments;
 
-INSERT INTO departments (department_name)
-VALUES  ("Engineering"),
-        ("Accounting"),
-        ("Consulting");
+INSERT INTO departments (name)
+VALUE ("Sales"),
+ ("Engineering"),
+ ("Finance"),
+ ("Legal");
 
-INSERT INTO roles (department_id, title, salary)
-VALUES  (1, "Lead Engineer", 99000.99),
-        (1, "Junior Engineer", 70000.50),
-        (2, "Head of Acocunting", 12085.97),
-        (2, "Accountant Intern", 25000.00),
-        (3, "Senior Consultant", 97450.90),
-        (3, "Junior Consultant", 65050.87);
-        
-INSERT INTO employees (role_id, first_name, last_name, manager_id)
-VALUES  (1, "Evan", "Woods", NULL),
-        (2, "Kevin", "Peng", NULL),
-        (3, "Liam", "Okane", 1),
-        (4, "Ryan", "Basser", NULL),
-        (5, "Trevor", "Inglis", 6),
-        (6, "Luka", "Tran", NULL);
+-- EMPLOYEE ROLE SEEDS -------
+INSERT INTO roles (title, salary, department_id)
+VALUE ("Lead Engineer", 145000, 2),
+ ("Legal Team Lead", 189000, 4),
+ ("Accountant", 100000, 3),
+ ("Sales Lead", 100000, 1),
+ ("Salesperson", 80000, 1),
+ ("Software Engineer", 120000, 2),
+ ("Lawyer", 190000, 4);
+
+-- EMPLOYEE SEEDS -------
+INSERT INTO employees (first_name, last_name, manager_id, role_id)
+VALUE ("Evan", "Woods", null, 1),
+("Kevin", "Peng", null, 2),
+("Liam","OKane",null,3),
+("Ryan", "Basser", 1, 4),
+("Luka", "Tran", 4, 5),
+("Brianca", "Inglis", 1, 6),
+("Joe", "Stevenson", 2, 7);

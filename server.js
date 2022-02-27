@@ -18,6 +18,7 @@ const connect = async () => {
 }
 
 
+
 const promptUser = async () => {
     return inquirer.prompt([
         {
@@ -55,6 +56,10 @@ const promptUser = async () => {
             case "add a role":
                 addToTable("roles");
                 return;
+
+            case "add an employee":
+                addToTable("employees");
+                return;
         }
 
     });
@@ -65,8 +70,7 @@ promptUser();
 
 // Function to show all elements in a given table based on selection in inquirer
 const showTable = async (table) => {
-    const db = await connect();   // Get the database connection
-
+    const db = await connect();
     db.query(`SELECT * FROM ${table}`, (err, result) => {
         if (err) {
             console.log(err);   //Hanlde errors
@@ -80,6 +84,7 @@ const showTable = async (table) => {
 }
 
 const addToTable = async (table) => {
+    let departmentsList = [];
     if (table == "departments") {
         inquirer.prompt([
             {
@@ -88,15 +93,20 @@ const addToTable = async (table) => {
                 mesasge: "Name of department:"
             }
         ]).then(userChoice => {
-            addValues("departments", ("department_name"), `"${userChoice.name}"`);
+            addValues("departments", ("name"), `"${userChoice.name}"`);
         });
     } else if (table == "roles") {
+        const db = await connect();
+        db.query("SELECT * FROM departments", (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                for (let i=0; i<result.length; i++) {
+                    departmentsList.push(result[i].name);
+                }
+            }
+        });
         inquirer.prompt([
-            {
-                type: "input",
-                name: "department",
-                mesasge: "department id of role:"
-            },
             {
                 type: "input",
                 name: "name",
@@ -106,11 +116,53 @@ const addToTable = async (table) => {
                 type: "input",
                 name: "salary",
                 mesasge: "salary of role:"
+            },
+            {
+                type: "list",
+                name: "department",
+                choices: departmentsList
+            }
+        ]).then( userChoice => {
+            for (let i=0; i<departmentsList.length; i++) {
+                if (userChoice.department == departmentsList[i]) {
+                    userChoice.department = i+1;
+                }
+            }
+            console.log(userChoice);
+            addValues("roles", "title, salary, department_id", `"${userChoice.name}", ${userChoice.salary}, ${userChoice.department}`)
+        });
+    } else if (table == "employees") {
+        let managerList = ["none"];
+        const db = await connect();
+        db.query("SELECT * FROM employees WHERE manager_id IS NOT NULL", (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                for (let i=0; i<result.length; i++) {
+                    managerList.push(result[i].first_name + " " + result[i].last_name);
+                }
+            }
+        })
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "fName",
+                mesasge: "First Name:"
+            },
+            {
+                type: "input",
+                name: "lName",
+                mesasge: "Last Name:"
+            },
+            {
+                type: "list",
+                name: "manager",
+                choices: managerList
             }
         ]).then( userChoice => {
             console.log(userChoice);
-            addValues("roles", "department_id, title, salary", `${userChoice.department}, "${userChoice.name}", ${userChoice.salary}`)
-        });
+        
+        })
     }
 };
 
