@@ -60,6 +60,10 @@ const promptUser = async () => {
             case "add an employee":
                 addToTable("employees");
                 return;
+            
+            case "update an employee role":
+                updateEmployee();
+                return;
         }
 
     });
@@ -203,4 +207,62 @@ const addValues = async (table, rows, values) => {
             promptUser();
         }
     });
+}
+
+const updateEmployee = async () => {
+    const employeeList = [];
+    const db = await connect();
+    db.query("SELECT * from employees", (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            for (let i=0; i<result.length; i++) {
+                employeeList.push(result[i].first_name + " " + result[i].last_name)
+            }
+        }
+        inquirer.prompt([
+            {
+                type: "list",
+                message: "Select an an employee:",
+                name: "employee",
+                choices: employeeList
+            }
+        ]).then( userChoice => {
+            const employee = userChoice.employee;
+            const names = employee.split(" ");
+            db.query(`SELECT * FROM employees WHERE first_name = '${names[0]}' AND last_name = '${names[1]}'`, (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    let roleList = [];
+                    db.query("SELECT * FROM  roles", (err, result) => {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            for (let i=0; i<result.length; i++) {
+                                roleList.push(result[i].title);
+                            }
+                        }
+                        inquirer.prompt([
+                            {
+                                type: "list",
+                                name: "roles",
+                                message: "select a new role",
+                                choices: roleList
+                            }
+                        ]).then( userChoice => {
+                            let roleId;
+                            for (let i=0; i<roleList.length; i++) {
+                                if (userChoice.roles == roleList[i]) {
+                                    roleId = i+1;
+                                }
+                            }
+                            db.query(`UPDATE employees SET role_id = ${roleId} WHERE first_name = '${names[0]}' AND last_name = '${names[1]}'`);
+                            promptUser();
+                        })
+                    })
+                }
+            })
+        })
+    })
 }
