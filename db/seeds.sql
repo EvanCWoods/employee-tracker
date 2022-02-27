@@ -27,6 +27,6 @@ VALUE ("Evan", "Woods", null, 1),
 ("Kevin", "Peng", null, 2),
 ("Liam","OKane",null,3),
 ("Ryan", "Basser", 1, 4),
-("Luka", "Tran", 4, 5),
+("Luka", "Tran", 3, 5),
 ("Brianca", "Inglis", 1, 6),
 ("Joe", "Stevenson", 2, 7);

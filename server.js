@@ -133,13 +133,23 @@ const addToTable = async (table) => {
         });
     } else if (table == "employees") {
         let managerList = ["none"];
+        let roleList = [];
         const db = await connect();
-        db.query("SELECT * FROM employees WHERE manager_id IS NOT NULL", (err, result) => {
+        db.query("SELECT * FROM employees WHERE manager_id IS NULL", (err, result) => {
             if (err) {
                 console.log(err);
             } else {
                 for (let i=0; i<result.length; i++) {
                     managerList.push(result[i].first_name + " " + result[i].last_name);
+                }
+            }
+        })
+        db.query("SELECT * FROM roles", (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                for (let i=0; i<result.length; i++) {
+                    roleList.push(result[i].title);
                 }
             }
         })
@@ -158,11 +168,28 @@ const addToTable = async (table) => {
                 type: "list",
                 name: "manager",
                 choices: managerList
+            },
+            {
+                type: "list",
+                name: "role",
+                choices: roleList
             }
         ]).then( userChoice => {
+            for (let i=0; i<managerList.length; i++) {
+                if (userChoice.manager == "none") {
+                    userChoice.manager = "NULL"
+                } else if (userChoice.manager == managerList[i]) {
+                    userChoice.manager = i;
+                }
+            }
+            for (let i=0; i<roleList.length; i++) {
+                if (userChoice.role == roleList[i]) {
+                    userChoice.role = i+1;
+                }
+            }
             console.log(userChoice);
-        
-        })
+            addValues("employees", "first_name, last_name, manager_id, role_id", `"${userChoice.fName}", "${userChoice.lName}", ${userChoice.manager}, ${userChoice.role}`);
+        });
     }
 };
 
