@@ -47,11 +47,11 @@ const promptUser = async () => {
           return;
 
         case "view all roles":
-          showTable("roles");
+          viewRoles();
           return;
 
         case "view all employees":
-          showTable("employees");
+          showEmployees();
           return;
 
         case "add a department":
@@ -94,6 +94,35 @@ const promptUser = async () => {
 };
 
 promptUser();
+
+const showEmployees = async () => {
+  const db = await connect();
+  db.query(`SELECT employees.id, employees.first_name, employees.last_name, 
+  roles.title AS title, roles.salary, departments.name AS department, 
+  CONCAT (manager.first_name, " ", manager.last_name) AS manager
+  FROM employees JOIN roles ON employees.role_id = roles.id 
+   JOIN departments ON roles.department_id = departments.id
+   LEFT JOIN employees AS manager ON employees.manager_id = manager.id;`, (err, result) => {
+    if (err) {
+      console.log(err);
+      promptUser();
+    } else {
+      console.table(result)
+      promptUser();
+  }
+  });
+}
+
+const viewRoles = async() => {
+  const db = await connect();
+  db.query(`SELECT roles.id, roles.title, roles.salary , departments.name AS departments FROM roles 
+  LEFT JOIN departments ON roles.department_id = departments.id`, function (err, res) {
+      if (err) throw err;
+      // Log all results of the SELECT statement
+      console.table(res);
+      promptUser();
+  });
+}
 
 // Function to show all elements in a given table based on selection in inquirer
 const showTable = async (table) => {
